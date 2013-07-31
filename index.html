@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="utf-8">
+  <style>
+
+    .node {
+      stroke: #fff;
+      stroke-width: 1.5px;
+    }
+
+    .link {
+      stroke: #999;
+      stroke-opacity: .6;
+    }
+
+    .button {
+      display: inline-block;
+      width: 150px;
+      height: 30px;
+      border: 1px solid black;
+      background: #00FFFF;
+      border-radius: 10px;
+      text-align: center;
+      margin: 10px;
+    }
+
+    .button a {
+      text-decoration: none;
+      color: black;
+      line-height: 30px;
+      font-family: verdana;
+    }
+
+    .active {
+      background: white;
+    }
+
+    svg {
+      border: 1px solid black;
+      width: 100%;
+    }
+
+    #buttons {
+      text-align: center;
+    }
+
+  </style>
+  <body>
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js'></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script>
+
+    var width = 1500,
+        height = 600;
+
+    var svg = d3.select("body").append("svg")
+          .attr("width", width)
+          .attr("height", height);
+
+    var enabledDimensions = [1,2,3,4,5,6];
+
+    var color = d3.scale.category10();
+
+    var force = d3.layout.force()
+        .charge(-50)
+        .linkDistance(function(d) {
+          return distanceBetween(d.source.vector, d.target.vector) * 3;
+        })
+        .friction(0)
+        .gravity(0)
+        .linkStrength(0.5)
+        .size([width, height]);
+
+    d3.json("entities.json", function(error, graph) {
+      for (var i=0; i < graph.nodes.length; i++) {
+          graph.nodes[i].x = 0.5*width;
+          graph.nodes[i].y = 0.5*height;
+      }
+      force
+          .nodes(graph.nodes)
+          .links(graph.links)
+          .start();
+
+      var link = svg.selectAll(".link")
+          .data(graph.links)
+          .enter().append("line")
+          .attr("class", "link")
+          .style("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+      var node = svg.selectAll(".node")
+          .data(graph.nodes)
+          .enter().append("circle")
+          .attr("class", "node")
+          .attr("r", 5)
+          .style("fill", function(d) { return color(d.number); })
+          .call(force.drag);
+
+      node.append("title")
+          .text(function(d) { return d.number; });
+
+      force.on("tick", function() {
+        link.attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+
+        node.attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
+      });
+    });
+
+    function distanceBetween(vector1, vector2) {
+      var sum = 0
+        for (var i = 0; i < enabledDimensions.length; i++){
+          var dimension = enabledDimensions[i];
+          sum += Math.pow((vector1[dimension - 1] - vector2[dimension - 1]), 2);
+        }
+      return Math.sqrt(sum);
+    }
+
+    $(document).ready(function() {
+      $('a').on('click', function(e) {
+        e.preventDefault();
+        $(this).parent().toggleClass('active');
+        var dimension = parseInt($(this).attr('id'));
+        var index = enabledDimensions.indexOf(dimension);
+        if (index == -1) {
+          enabledDimensions.push(dimension);
+        }
+        else {
+          enabledDimensions.splice(index, 1);
+        }
+        force.start();
+      });
+    });
+
+    </script>
+    <div id='buttons'>
+      <div class='button'><a id='1' href='#'>Dimension 1</a></div>
+      <div class='button'><a id='2' href='#'>Dimension 2</a></div>
+      <div class='button'><a id='3' href='#'>Dimension 3</a></div>
+      <div class='button'><a id='4' href='#'>Dimension 4</a></div>
+      <div class='button'><a id='5' href='#'>Dimension 5</a></div>
+      <div class='button'><a id='6' href='#'>Dimension 6</a></div>
+    </div>
+  </body>
+</html>
