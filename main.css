@@ -1,0 +1,40 @@
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+.button {
+  display: inline-block;
+  width: 150px;
+  height: 30px;
+  border: 1px solid black;
+  background: #00FFFF;
+  border-radius: 10px;
+  text-align: center;
+  margin: 10px;
+}
+
+.button a {
+  text-decoration: none;
+  color: black;
+  line-height: 30px;
+  font-family: verdana;
+}
+
+.active {
+  background: white;
+}
+
+svg {
+  border: 1px solid black;
+  width: 100%;
+}
+
+#buttons {
+  text-align: center;
+}
