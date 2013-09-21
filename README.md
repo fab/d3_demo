@@ -1,6 +1,6 @@
-D3 Demo
-=======
-This is my first attempt at using D3. Just a simple force-directed graph that shows the cartesian distance between nodes.
+D3.js Demo
+==========
+This is my first attempt at using [D3.js](http://d3js.org/). Just a simple force-directed graph that shows the cartesian distance between nodes.
 
 The graph plots 10 entities where each is represented by a six-dimensional vector with values from 0 to 100.
 
